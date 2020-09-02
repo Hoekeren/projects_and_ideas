@@ -1,0 +1,41 @@
+### Denne automation tager et snapshot af tilstanden på min sonoshøjtaler og pauser musikken (hvis den spiller), når der tales i telefon ###
+ 
+- id: '1599032944571'
+  alias: 1. phonecall - sonos mute
+  description: ''
+  trigger:
+  - entity_id: sensor.cs_mobil_phone_state
+    platform: state
+    to: offhook
+  condition:
+  - condition: zone
+    entity_id: person.christian
+    zone: zone.home
+  action:
+  - data: {}
+    entity_id: media_player.kontoret
+    service: sonos.snapshot
+  - timeout: 00:00:01
+    wait_template: ''
+  - data: {}
+    entity_id: media_player.kontoret
+    service: media_player.media_pause
+  mode: single
+ 
+### Denne automation laver en "restore" af snapshottet, når opkaldet afsluttes. Så hvis der har været musik inden opkaldet, fortsættes hvor den pausede. Har der ikke været musik, forbliver højtaleren tavs. ###
+- id: '1599033393434'
+  alias: 3. phonecall end - resume sonos
+  description: ''
+  trigger:
+  - entity_id: sensor.cs_mobil_phone_state
+    from: offhook
+    platform: state
+  condition:
+  - condition: zone
+    entity_id: person.christian
+    zone: zone.home
+  action:
+  - data: {}
+    entity_id: media_player.kontoret
+    service: sonos.restore
+  mode: single
